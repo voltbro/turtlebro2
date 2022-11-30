@@ -1,0 +1,3 @@
+<launch>
+   <node pkg="micro_ros_agent" exec="micro_ros_agent" args="serial --dev /dev/ttyUSB2 -b 460800" name="micro_ros_stm_agent" />
+</launch>

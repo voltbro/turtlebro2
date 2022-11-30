@@ -1,0 +1,18 @@
+# THIS IS A GENERATED FILE, NOT RECOMMENDED TO EDIT.
+
+[Unit]
+Description="TurtleBro ROS"
+After=getty.target
+Wants=network-online.target
+
+[Service]
+#Environment="HOME=user"
+Type=simple
+ExecStart=/home/user/.ros/turtlebro-start
+User=user
+Group=user
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

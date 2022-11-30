@@ -1,0 +1,4 @@
+std_msgs/Empty request
+---
+std_msgs/String mcu_id
+std_msgs/String firmware_version
