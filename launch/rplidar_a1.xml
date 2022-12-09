@@ -1,0 +1,12 @@
+<launch>
+   <!-- scan_modes is Standard Express Boost Sensitivity Stability -->
+   <arg name="scan_mode" default="Boost"/>
+   <node pkg="rplidar_ros" exec="rplidar_composition" name="rplidar_composition">
+      <param name="serial_port"         value="/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0011-if00-port0"/>
+      <param name="serial_baudrate"     value="115200"/><!--A1/A2 -->
+      <param name="frame_id"            value="base_scan"/>
+      <param name="inverted"            value="False"/>
+      <param name="angle_compensate"    value="True"/>
+      <param name="scan_mode"           value="$(var scan_mode)"/>
+   </node>
+</launch>

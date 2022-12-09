@@ -1,4 +1,7 @@
 <launch>
-  <!--include file="$(find-pkg-share demo_nodes_cpp)/launch/topics/talker_listener.launch.py"/-->
+  <include file="$(find-pkg-share turtlebro)/launch/robot_model.py"/>
+  <include file="$(find-pkg-share turtlebro)/launch/rplidar_a1.xml"/>
+
    <node pkg="micro_ros_agent" exec="micro_ros_agent" args="serial --dev /dev/ttyUSB2 -b 460800" name="micro_ros_stm_agent" />
+
 </launch>

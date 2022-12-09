@@ -34,6 +34,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
 install(DIRECTORY
   launch
+  urdf
   DESTINATION share/${PROJECT_NAME}/
 )
 
