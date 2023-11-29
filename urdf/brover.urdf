@@ -25,7 +25,7 @@
 
   <joint name="scan_joint" type="fixed">
     <parent link="base_link"/>
-    <child link="base_scan"/>
+    <child link="base_laser"/>
     <origin xyz="0.1 -0.065 0.08" rpy="0 0 3.1415"/>
   </joint>
 
@@ -72,7 +72,7 @@
     </visual>
   </link>
 
-  <link name="base_scan">
+  <link name="base_laser">
     <visual>
       <origin xyz="0 0 0.0" rpy="0 0 0"/>
       <geometry>
