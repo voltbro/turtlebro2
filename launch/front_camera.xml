@@ -2,7 +2,7 @@
   <node pkg="v4l2_camera" exec="v4l2_camera_node" name="v4l2_camera_node">
     <param name="video_device" value="/dev/video0"/>
     <param name="image_size" value="[320,240]"/>
-    <param name="camera_frame_id" value="front_camera">
+    <param name="camera_frame_id" value="front_camera"/>
     <remap from="/camera_info" to="/front_camera_info"/>
     <remap from="/image_raw" to="/front_camera"/>
     <remap from="/image_raw/compressed" to="/front_camera/compressed"/>
