@@ -8,9 +8,9 @@ Wants=network-online.target
 [Service]
 #Environment="HOME=user"
 Type=simple
-ExecStart=/home/user/.ros/turtlebro-start
-User=user
-Group=user
+ExecStart=/home/pi/.ros/turtlebro-start
+User=pi
+Group=pi
 Restart=on-failure
 RestartSec=15
 
