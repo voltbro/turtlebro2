@@ -6,5 +6,8 @@
   <include file="$(find-pkg-share turtlebro)/launch/front_camera.xml"/>
 
   <include file="$(find-pkg-share turtlebro_web)/launch/web_server.xml"/>
+
+  <node pkg="turtlebro" exec="simple_odom.py" name="simple_odom_republish" />
+  
   
 </launch>
