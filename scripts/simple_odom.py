@@ -8,6 +8,7 @@ from rclpy.node import Node
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Pose2D
 
+
 ROS_DOMAIN_ID :int = int(os.environ.get('ROS_DOMAIN_ID',0))
 
 class SimpleOdometry(Node):
@@ -15,12 +16,17 @@ class SimpleOdometry(Node):
     def __init__(self):
         super().__init__('simple_odom_republish')
 
+        qos_policy = rclpy.qos.QoSProfile(reliability=rclpy.qos.ReliabilityPolicy.BEST_EFFORT,
+                                          history=rclpy.qos.HistoryPolicy.KEEP_LAST,
+                                          depth=1)
+
         self.publisher = self.create_publisher(Pose2D, 'odom2d', 10)
+        
         self.subscription = self.create_subscription(
             Odometry,
-            'odom',
+            '/odom',
             self.listener_callback,
-            10)
+            qos_profile= qos_policy)
         self.get_logger().info("Init 2D Odometry republish")
         self.subscription  # prevent unused variable warning
 
