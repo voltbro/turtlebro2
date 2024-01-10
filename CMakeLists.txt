@@ -44,7 +44,7 @@ install(DIRECTORY
 # ament_python_install_package(${PROJECT_NAME})
 # Install Python executables
 install(PROGRAMS
-  scripts/simple_odom.py
+  scripts/odom.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
