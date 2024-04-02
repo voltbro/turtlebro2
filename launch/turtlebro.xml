@@ -1,16 +1,8 @@
 <launch>
-
-  <include file="$(find-pkg-share turtlebro)/launch/micro_ros_stm.xml"/>
-
   <include file="$(find-pkg-share turtlebro)/launch/robot_model.py"/>
-  
   <include file="$(find-pkg-share turtlebro)/launch/rplidar_a1.xml"/>
-  
   <include file="$(find-pkg-share turtlebro)/launch/usb_camera.xml"/>
-
   <include file="$(find-pkg-share turtlebro_web)/launch/web_server.xml"/>
 
   <node pkg="turtlebro" exec="odom.py" name="odom_publisher" />
-  
-  
 </launch>
