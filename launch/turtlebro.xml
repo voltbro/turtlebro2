@@ -6,7 +6,7 @@
   
   <include file="$(find-pkg-share turtlebro)/launch/rplidar_a1.xml"/>
   
-  <include file="$(find-pkg-share turtlebro)/launch/front_camera.xml"/>
+  <include file="$(find-pkg-share turtlebro)/launch/usb_camera.xml"/>
 
   <include file="$(find-pkg-share turtlebro_web)/launch/web_server.xml"/>
 

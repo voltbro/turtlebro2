@@ -38,6 +38,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 install(DIRECTORY
   launch
   urdf
+  camera
   DESTINATION share/${PROJECT_NAME}/
 )
 
