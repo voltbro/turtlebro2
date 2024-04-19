@@ -31,58 +31,64 @@ class OdometryPublisher : public rclcpp::Node
           "/imu", 10, 
           std::bind(&OdometryPublisher::imu_callback, this, _1));
 
-      odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom_cpp", 10);
-      pose2d_publisher_ = this->create_publisher<geometry_msgs::msg::Pose2D>("/pose2d_cpp", 10);
+      odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+      pose2d_publisher_ = this->create_publisher<geometry_msgs::msg::Pose2D>("/pose2d", 10);
             
       timer_ = this->create_wall_timer(
-        250ms, std::bind(&OdometryPublisher::publish_pose2d, this));
+        250ms, std::bind(&OdometryPublisher::publish_pose2d_cb, this));
 
     }
 
   private:
-    void pose_callback(geometry_msgs::msg::Pose msg)
+    void pose_callback(const std::shared_ptr<geometry_msgs::msg::Pose> msg) 
     {
-      RCLCPP_DEBUG(this->get_logger(), "I heard ODOM.x: '%f'", msg.position.x);
+      RCLCPP_DEBUG(this->get_logger(), "I heard ODOM.x: '%f'", msg->position.x);
 
-      this->pose_msg = msg;
-      nav_msgs::msg::Odometry odom;
-
+      pose_msg = msg;
       rclcpp::Time now = this->get_clock()->now();
+
+      nav_msgs::msg::Odometry odom;
       odom.header.stamp = now;
       odom.header.frame_id = "odom";
       odom.child_frame_id  = "base_footprint";
 
-      odom.pose.pose.position = msg.position;
-      odom.pose.pose.orientation = msg.orientation;
-      odom.twist.twist.angular = this->imu_msg.angular_velocity;
+      odom.pose.pose.position = msg->position;
+      odom.pose.pose.orientation = msg->orientation;
+
+      if (imu_msg != nullptr){
+        odom.twist.twist.angular = imu_msg->angular_velocity;
+      }
+
       odom_publisher_->publish(odom);
 
       geometry_msgs::msg::TransformStamped t;
       t.header.stamp = now;
       t.header.frame_id = "odom";
       t.child_frame_id  = "base_footprint";     
-      t.transform.translation.x = msg.position.x;
-      t.transform.translation.y = msg.position.y;
+      t.transform.translation.x = msg->position.x;
+      t.transform.translation.y = msg->position.y;
       t.transform.translation.z = 0.0;
-      t.transform.rotation = msg.orientation;  
+      t.transform.rotation = msg->orientation;  
       tf_broadcaster_->sendTransform(t);
 
     }
 
-    void imu_callback(sensor_msgs::msg::Imu msg)
+    void imu_callback(const std::shared_ptr<sensor_msgs::msg::Imu> msg) 
     {
-      RCLCPP_DEBUG(this->get_logger(), "I heard  IMU.x: '%f'", msg.angular_velocity.x);
-      this->imu_msg = msg;
+      RCLCPP_DEBUG(this->get_logger(), "I heard  IMU.x: '%f'", msg->angular_velocity.x);
+      imu_msg = msg;
     }
 
-    void publish_pose2d()
+    void publish_pose2d_cb()
     {
-      geometry_msgs::msg::Pose2D pose;
-      pose.x = this->pose_msg.position.x;
-      pose.y = this->pose_msg.position.y;
-      pose.theta = this->quaternion_to_theta(this->pose_msg.orientation);
+      if (pose_msg != nullptr){
+        geometry_msgs::msg::Pose2D pose;
+        pose.x = pose_msg->position.x;
+        pose.y = pose_msg->position.y;
+        pose.theta = this->quaternion_to_theta(pose_msg->orientation);
 
-      pose2d_publisher_->publish(pose);
+        pose2d_publisher_->publish(pose);
+      }
     }     
 
     float quaternion_to_theta(const geometry_msgs::msg::Quaternion& orientation){
@@ -103,9 +109,8 @@ class OdometryPublisher : public rclcpp::Node
     rclcpp::Publisher<geometry_msgs::msg::Pose2D>::SharedPtr pose2d_publisher_;
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-    
-    sensor_msgs::msg::Imu imu_msg;
-    geometry_msgs::msg::Pose pose_msg;
+    std::shared_ptr<sensor_msgs::msg::Imu> imu_msg; 
+    std::shared_ptr<geometry_msgs::msg::Pose> pose_msg;
 
 };
 
