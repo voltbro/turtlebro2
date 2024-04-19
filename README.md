@@ -4,7 +4,7 @@
 ### How to build one package
 
 ```
-colcon build --symlink-install --parallel-workers 1 --packages-select=turtlebro
+colcon build --symlink-install --parallel-workers 1 --packages-select turtlebro
 ```
 
 ### Start/Stop robot services
