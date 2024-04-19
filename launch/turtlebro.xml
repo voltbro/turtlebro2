@@ -4,5 +4,5 @@
   <include file="$(find-pkg-share turtlebro)/launch/usb_camera.xml"/>
   <include file="$(find-pkg-share turtlebro_web)/launch/web_server.xml"/>
 
-  <node pkg="turtlebro" exec="odom.py" name="odom_publisher" />
+  <node pkg="turtlebro" exec="odom_node" name="odom_publisher" respawn="true" respawn_delay="10"/>
 </launch>

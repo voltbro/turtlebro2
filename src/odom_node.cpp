@@ -35,7 +35,7 @@ class OdometryPublisher : public rclcpp::Node
       pose2d_publisher_ = this->create_publisher<geometry_msgs::msg::Pose2D>("/pose2d", 10);
             
       timer_ = this->create_wall_timer(
-        250ms, std::bind(&OdometryPublisher::publish_pose2d_cb, this));
+        250ms, std::bind(&OdometryPublisher::publish_pose2d_callback, this));
 
     }
 
@@ -79,9 +79,11 @@ class OdometryPublisher : public rclcpp::Node
       imu_msg = msg;
     }
 
-    void publish_pose2d_cb()
+    void publish_pose2d_callback()
     {
       if (pose_msg != nullptr){
+        RCLCPP_DEBUG(this->get_logger(), "Pose2d pub.x: '%f'", pose_msg->position.x);
+
         geometry_msgs::msg::Pose2D pose;
         pose.x = pose_msg->position.x;
         pose.y = pose_msg->position.y;
