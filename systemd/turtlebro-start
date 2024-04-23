@@ -5,18 +5,19 @@ function log() {
   logger -s -p user.$1 ${@:2}
 }
 
-#source /home/user/.ros_params
+source /home/pi/.ros_params
 source /opt/ros/humble/local_setup.bash
-source /home/user/microros_ws/install/local_setup.bash
-source /home/user/turtlebro_ws/install/local_setup.bash
+source /home/pi/microros_ws/install/local_setup.bash
+source /home/pi/ros_extra_ws/install/local_setup.bash
+source /home/pi/turtlebro_ws/install/local_setup.bash
 
-log_path="/home/user/.ros/log"
+log_path="/home/pi/.ros/log"
 if [[ ! -d $log_path ]]; then
   CREATED_LOGDIR=true
   trap 'CREATED_LOGDIR=false' ERR
     log warn "turtlebro: The log directory you specified \"$log_path\" does not exist. Attempting to create."
     mkdir -p $log_path 2>/dev/null
-    chown user:user $log_path 2>/dev/null
+    chown pi:pi $log_path 2>/dev/null
     chmod ug+wr $log_path 2>/dev/null
   trap - ERR
   # if log_path could not be created, default to tmp
