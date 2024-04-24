@@ -2,3 +2,4 @@ export ROS_DOMAIN_ID=1
 export ROBOT_IP=$(hostname  -I | cut -f1 -d' ')
 export ROBOT_MODEL=turtlebro
 export FASTRTPS_DEFAULT_PROFILES_FILE=/home/pi/.ros/fastdds_supeclient.xml
+export ROVER_WHEEL_PARAM=12280

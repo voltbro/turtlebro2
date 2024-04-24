@@ -1,3 +1,5 @@
 <launch>
-   <node pkg="micro_ros_agent" exec="micro_ros_agent" args="serial --dev /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0012-if00-port0 -b 460800" name="micro_ros_stm_agent" />
+   <node pkg="micro_ros_agent" exec="micro_ros_agent" args="serial --dev /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0012-if00-port0 -b 460800" name="microros_stm_serial_node"/>
+   <!-- micros params init at stm23 on boot, we need reinit same params after os load -->
+   <node pkg="turtlebro" exec="param_setter.py" name="stm_param_setter"/>
 </launch>
