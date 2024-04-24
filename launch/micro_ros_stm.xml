@@ -1,3 +1,3 @@
 <launch>
-   <node pkg="micro_ros_agent" exec="micro_ros_agent" args="serial --dev /dev/ttyUSB2 -b 460800" name="micro_ros_stm_agent" />
+   <node pkg="micro_ros_agent" exec="micro_ros_agent" args="serial --dev /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0012-if00-port0 -b 460800" name="micro_ros_stm_agent" />
 </launch>
