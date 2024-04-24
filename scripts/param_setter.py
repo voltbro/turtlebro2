@@ -49,7 +49,8 @@ def main(args=None):
     rclpy.init(domain_id=ROS_DOMAIN_ID)
 
     node = ParamSetter(server_name = 'stm_serial_node')
-    node.set_param('wheelparam', ROVER_WHEEL_PARAM)
+    node.declare_parameter('wheelparam', 12000)
+    node.set_param('wheelparam', node.get_parameter('wheelparam').value)
   
     node.destroy_node()  
     rclpy.shutdown()            
