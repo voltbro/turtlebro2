@@ -62,6 +62,7 @@ install(DIRECTORY
 # Install Python executables
 install(PROGRAMS
   scripts/odom.py
+  scripts/param_setter.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
