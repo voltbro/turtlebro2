@@ -1,0 +1,19 @@
+# THIS IS A GENERATED FILE, NOT RECOMMENDED TO EDIT.
+
+[Unit]
+Description="TurtleBro ROS"
+After=getty.target
+After=fastdds.service
+Wants=network-online.target
+
+[Service]
+#Environment="HOME=pi"
+Type=simple
+ExecStart=/home/pi/.ros/turtlebro-start
+User=pi
+Group=pi
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

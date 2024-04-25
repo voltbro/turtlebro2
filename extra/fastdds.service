@@ -1,0 +1,16 @@
+[Unit]
+Description="Fast DDS Server"
+After=getty.target
+Wants=network-online.target
+
+[Service]
+#Environment="HOME=pi"
+Type=simple
+ExecStart=/home/pi/.ros/fastdds-start
+User=pi
+Group=pi
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target
