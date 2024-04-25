@@ -59,7 +59,7 @@ install(DIRECTORY
 )
 
 # ament_python_install_package(${PROJECT_NAME})
-# Install Python executab les
+# Install Python executables
 install(PROGRAMS
   scripts/odom.py
   scripts/param_setter.py

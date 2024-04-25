@@ -8,11 +8,10 @@ from rcl_interfaces.msg import Parameter
 from rclpy.parameter import ParameterValue, ParameterType
 
 ROS_DOMAIN_ID :int = int(os.environ.get('ROS_DOMAIN_ID',0))
-ROVER_WHEEL_PARAM :int = int(os.environ.get('ROVER_WHEEL_PARAM',12001))
 
 class ParamSetter(Node):
     def __init__(self, server_name:str)->None:
-        super().__init__('stm32_parameter_setter')
+        super().__init__('parameter_setter')
 
         self.cli = self.create_client(SetParameters, '/' + server_name + '/set_parameters')
         while not self.cli.wait_for_service(timeout_sec=1.0):
