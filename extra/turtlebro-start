@@ -5,7 +5,7 @@ function log() {
   logger -s -p user.$1 ${@:2}
 }
 
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 source /home/pi/microros_ws/install/local_setup.bash
 source /home/pi/ros_extra_ws/install/local_setup.bash
 source /home/pi/turtlebro_ws/install/local_setup.bash

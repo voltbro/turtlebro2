@@ -6,7 +6,7 @@ function log() {
 }
 
 source /home/pi/.ros_params
-source /opt/ros/humble/local_setup.bash
+source /opt/ros/jazzy/local_setup.bash
 source /home/pi/microros_ws/install/local_setup.bash
 source /home/pi/ros_extra_ws/install/local_setup.bash
 source /home/pi/turtlebro_ws/install/local_setup.bash

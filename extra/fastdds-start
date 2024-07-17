@@ -1,4 +1,4 @@
 #!/bin/bash
 source /home/pi/.ros_params
-source /opt/ros/humble/local_setup.bash
-/opt/ros/humble/bin/fastdds discovery -i 0 -p 11811
+source /opt/ros/jazzy/local_setup.bash
+/opt/ros/jazzy/bin/fastdds discovery -i 0 -p 11811
