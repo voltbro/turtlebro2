@@ -9,6 +9,7 @@ Wants=network-online.target
 [Service]
 #Environment="HOME=pi"
 Type=simple
+ExecStop=/home/pi/.ros/turtlebro-before-stop
 ExecStart=/home/pi/.ros/turtlebro-start
 User=pi
 Group=pi
