@@ -24,13 +24,13 @@
   <joint name="base_joint" type="fixed">
     <parent link="base_footprint"/>
     <child link="base_link"/>
-    <origin xyz="0.0 0.0 0.025" rpy="0 0 0"/>
+    <origin xyz="0.0 0.0 0.035" rpy="0 0 0"/>
   </joint>
 
   <joint name="scan_joint" type="fixed">
     <parent link="base_link"/>
     <child link="base_laser"/>
-    <origin xyz="0.0 0 0.08" rpy="0 0 3.1415"/>
+    <origin xyz="0.0 0 0.095" rpy="0 0 3.1415"/>
   </joint>
 
   <joint name="imu_joint" type="fixed">
@@ -39,17 +39,23 @@
     <origin xyz="0.0 0 0.035" rpy="0 0 0"/>
   </joint>
 
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_camera"/>
+    <origin xyz="0.06 0 0.055" rpy="0 0.47 0"/>
+  </joint>  
+
   <joint name="wheel_left_joint" type="fixed">
     <parent link="base_link"/>
     <child link="wheel_left_link"/>
-    <origin xyz="0 0.115 0" rpy="0 0 0"/>
+    <origin xyz="0 0.115 -0.005" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>
 
   <joint name="wheel_right_joint" type="fixed">
     <parent link="base_link"/>
     <child link="wheel_right_link"/>
-    <origin xyz="0 -0.115 0" rpy="0 0 0"/>
+    <origin xyz="0 -0.115 -0.005" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
   </joint>  
 
@@ -64,11 +70,22 @@
     </visual>
   </link>
 
+  <link name="front_camera">
+    <visual>
+      <origin rpy="0 1.54 0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.04 0.04 0.005"/>
+      </geometry>
+      <material name="extra_dark"/>
+    </visual>
+  </link>  
+  
+
   <link name="base_link">
     <visual>
       <origin rpy="0 0 0" xyz="-0.03 0 0.0"/>
       <geometry>
-        <box size="0.20 0.20 0.04"/>
+        <box size="0.24 0.20 0.05"/>
       </geometry>
       <material name="extra_dark"/>
     </visual>
@@ -78,7 +95,7 @@
     <visual>
       <origin xyz="0 0 -0.03" rpy="0 0 0"/>
       <geometry>
-        <cylinder length="0.0515" radius="0.035"/>
+        <cylinder length="0.0615" radius="0.04"/>
       </geometry>
       <material name="dark"/>
     </visual>
