@@ -1,0 +1,27 @@
+image_width: 640
+image_height: 480
+camera_name: global_shutter_640
+
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [354.83006,   0.     , 315.88669,
+           0.     , 355.07346, 246.47189,
+           0.     ,   0.     ,   1.     ]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [-0.322630, 0.089095, -0.001529, 0.000489, 0.000000]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1., 0., 0.,
+         0., 1., 0.,
+         0., 0., 1.]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [261.16376,   0.     , 316.59847,   0.     ,
+           0.     , 291.73837, 247.50522,   0.     ,
+           0.     ,   0.     ,   1.     ,   0.     ]
