@@ -1,17 +1,17 @@
 image_width: 640
 image_height: 480
-camera_name: note_camera
+camera_name: global_shutter_640
 camera_matrix:
   rows: 3
   cols: 3
-  data: [471.30586,   0.     , 275.62202,
-           0.     , 469.29866, 220.51317,
+  data: [339.23124,   0.     , 307.72959,
+           0.     , 339.06017, 238.0241 ,
            0.     ,   0.     ,   1.     ]
 distortion_model: plumb_bob
 distortion_coefficients:
   rows: 1
   cols: 5
-  data: [-0.031917, 0.026534, -0.004239, -0.005877, 0.000000]
+  data: [-0.271466, 0.054583, -0.000506, 0.000360, 0.000000]
 rectification_matrix:
   rows: 3
   cols: 3
@@ -21,6 +21,6 @@ rectification_matrix:
 projection_matrix:
   rows: 3
   cols: 4
-  data: [466.63278,   0.     , 271.02927,   0.     ,
-           0.     , 466.50525, 217.83164,   0.     ,
+  data: [235.106  ,   0.     , 305.45612,   0.     ,
+           0.     , 281.52859, 236.0023 ,   0.     ,
            0.     ,   0.     ,   1.     ,   0.     ]

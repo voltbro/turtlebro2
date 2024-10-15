@@ -42,8 +42,20 @@
   <joint name="camera_joint" type="fixed">
     <parent link="base_link"/>
     <child link="front_camera"/>
-    <origin xyz="0.06 0 0.055" rpy="0 0.47 0"/>
+    <!--origin xyz="0.06 0 0.055" rpy="-1.570 0 -1.57"/-->
+    <origin xyz="0.06 0 0.055" rpy="-1.98 0 -1.57075"/>
+    <!-- <origin xyz="0.06 0 0.055" rpy="0 0.47 3.1415"/> -->
+        <!-- <origin xyz="0.06 0 0.055" rpy="0 2.04 0"/> -->
   </joint>  
+
+  <joint name="back_camera_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="back_camera"/>
+    <!--origin xyz="0.06 0 0.055" rpy="-1.570 0 -1.57"/-->
+    <origin xyz="-0.12 -0.06 0.25" rpy="-1.57075 0 1.57075"/>
+    <!-- <origin xyz="0.06 0 0.055" rpy="0 0.47 3.1415"/> -->
+        <!-- <origin xyz="0.06 0 0.055" rpy="0 2.04 0"/> -->
+  </joint>    
 
   <joint name="wheel_left_joint" type="fixed">
     <parent link="base_link"/>
@@ -72,7 +84,7 @@
 
   <link name="front_camera">
     <visual>
-      <origin rpy="0 1.54 0" xyz="0.0 0.0 0.0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
       <geometry>
         <box size="0.04 0.04 0.005"/>
       </geometry>
@@ -80,6 +92,15 @@
     </visual>
   </link>  
   
+  <link name="back_camera">
+    <visual>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.10 0.01 0.005"/>
+      </geometry>
+      <material name="extra_dark"/>
+    </visual>
+  </link>    
 
   <link name="base_link">
     <visual>
