@@ -30,6 +30,13 @@ find_package(rclpy REQUIRED)
 add_executable(odom_node src/odom_node.cpp)
 ament_target_dependencies(odom_node rclcpp std_msgs tf2 tf2_ros geometry_msgs nav_msgs sensor_msgs)
 
+
+add_executable(lidar_republish src/lidar_republish.cpp)
+ament_target_dependencies(lidar_republish
+  rclcpp
+  sensor_msgs
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -69,7 +76,8 @@ install(PROGRAMS
 )
 
 install(TARGETS
-  odom_node
+  odom_node lidar_republish
   DESTINATION lib/${PROJECT_NAME})
+  
 
 ament_package()

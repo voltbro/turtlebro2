@@ -59,5 +59,8 @@ def generate_launch_description():
                          'frame_id': frame_id,
                          'inverted': inverted,
                          'angle_compensate': angle_compensate}],
+            remappings=[
+                ('/scan', '/scan_s1'),
+            ],             
             output='screen'),
     ])
