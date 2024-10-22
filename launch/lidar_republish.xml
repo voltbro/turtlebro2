@@ -1,0 +1,6 @@
+<launch>
+  <node pkg="turtlebro" exec="lidar_republish" name="lidar_republish" respawn="true" respawn_delay="10">
+    <param name="strip_angle_start" value="216"/>
+    <param name="strip_angle_stop" value="225"/>    
+  </node>
+</launch>  
