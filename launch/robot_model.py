@@ -1,19 +1,24 @@
 from ament_index_python.packages import get_package_share_path
 
-from launch import LaunchDescription
+from launch import LaunchDescription, LaunchContext
 from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import Command, LaunchConfiguration
+from launch.substitutions import Command, LaunchConfiguration, EnvironmentVariable
 
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 def generate_launch_description():
 
+    lc = LaunchContext()
+
     turtlebro_shared_path  = get_package_share_path('turtlebro')
-    default_model_path = turtlebro_shared_path / 'urdf/turtlebro.urdf'
     
-    model_arg = DeclareLaunchArgument(name='model', default_value=str(default_model_path),
+    robot_model = EnvironmentVariable("ROBOT_MODEL", default_value="turtlebro2")
+
+    robot_model_path = f'{turtlebro_shared_path}/urdf/{robot_model.perform(lc)}.urdf'
+    
+    model_arg = DeclareLaunchArgument(name='model', default_value=robot_model_path,
                                       description='Absolute path to robot urdf file')
 
     robot_description = ParameterValue(Command(['xacro ', LaunchConfiguration('model')]),

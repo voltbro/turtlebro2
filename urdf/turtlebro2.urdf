@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="turtlebro">
+<robot name="turtlebro2">
 
   <material name="extra_dark">
     <color rgba="0.1 0.1 0.1 1.0"/>
@@ -42,8 +42,8 @@
   <joint name="camera_joint" type="fixed">
     <parent link="base_link"/>
     <child link="front_camera"/>
-    <origin xyz="0.06 0 0.055" rpy="0 0.47 0"/>
-  </joint>  
+    <origin xyz="0.06 0 0.055" rpy="-1.98 0 -1.57075"/>
+  </joint>     
 
   <joint name="wheel_left_joint" type="fixed">
     <parent link="base_link"/>
@@ -72,15 +72,14 @@
 
   <link name="front_camera">
     <visual>
-      <origin rpy="0 1.54 0" xyz="0.0 0.0 0.0"/>
+      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
       <geometry>
         <box size="0.04 0.04 0.005"/>
       </geometry>
       <material name="extra_dark"/>
     </visual>
   </link>  
-  
-
+   
   <link name="base_link">
     <visual>
       <origin rpy="0 0 0" xyz="-0.03 0 0.0"/>
