@@ -26,3 +26,10 @@ sudo systemctl start/stop microros
 ```
 sudo systemctl start/stop turtlebro
 ```
+
+#### leds
+
+```
+ros2 lifecycle set leds_lifecycle activate
+ros2 lifecycle set leds_lifecycle deactivate
+```

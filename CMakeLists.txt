@@ -70,6 +70,7 @@ install(DIRECTORY
 # Install Python executables
 install(PROGRAMS
   scripts/leds.py
+  scripts/leds_lifecycle.py
   scripts/odom.py
   scripts/param_setter.py
   DESTINATION lib/${PROJECT_NAME}
