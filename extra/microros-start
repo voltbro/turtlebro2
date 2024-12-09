@@ -7,3 +7,4 @@ source /home/pi/turtlebro_ws/install/local_setup.bash
 source /home/pi/.ros_params
 
 ros2 launch turtlebro micro_ros_stm.xml
+# /home/pi/microros_ws/install/micro_ros_agent/lib/micro_ros_agent/micro_ros_agent serial --dev /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0012-if00-port0 -b 460800

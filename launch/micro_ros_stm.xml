@@ -4,4 +4,7 @@
    <node pkg="turtlebro" exec="param_setter.py" name="stm_param_setter">
       <param name="wheelparam" value="$(env ROBOT_WHEEL_PARAM 12000)"/>
    </node>
+
+  <node pkg="turtlebro" exec="heartbeat.py" name="microros_heartbeat" respawn="true" respawn_delay="10"/>
+  
 </launch>

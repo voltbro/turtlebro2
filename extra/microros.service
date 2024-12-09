@@ -2,7 +2,10 @@
 Description="MicroROS Agent"
 After=getty.target
 After=fastdds.service
+
 Wants=network-online.target
+Wants=fastdds.service
+
 
 [Service]
 #Environment="HOME=pi"

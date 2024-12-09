@@ -4,7 +4,12 @@
 Description="TurtleBro ROS"
 After=getty.target
 After=fastdds.service
+After=microros.service
+
 Wants=network-online.target
+Wants=fastdds.service
+Wants=microros.service
+
 
 [Service]
 #Environment="HOME=pi"

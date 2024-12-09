@@ -73,6 +73,8 @@ install(PROGRAMS
   scripts/leds_lifecycle.py
   scripts/odom.py
   scripts/param_setter.py
+  scripts/heartbeat_monitor.py
+  scripts/heartbeat.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

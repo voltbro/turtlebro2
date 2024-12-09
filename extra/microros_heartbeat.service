@@ -1,0 +1,19 @@
+[Unit]
+Description="Heartbeat monitor for MicroROS Agent"
+
+After=microros.service
+
+Wants=microros.service
+
+
+[Service]
+#Environment="HOME=pi"
+Type=simple
+ExecStart=/home/pi/turtlebro_ws/src/turtlebro/scripts/heartbeat_monitor.py
+User=root
+Group=root
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
