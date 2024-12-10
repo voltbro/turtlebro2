@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 
 import rclpy
-from itertools import cycle
+import random
 from typing import Optional
-
-from collections.abc import Iterable
 
 from rclpy.lifecycle import Node
 from rclpy.lifecycle import Publisher
@@ -13,22 +11,16 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.timer import Timer
 
 from std_msgs.msg import ColorRGBA
-from turtlebro.msg import ColorRGBAArray 
 
 
 class LedsDemoLifecycle(Node):
 
     def __init__(self, node_name, **kwargs):
 
-        self.timer_period = 0.05  # seconds
+        self.timer_period = 1  # seconds
 
-        self.led_msg = ColorRGBAArray()
         self._pub: Optional[Publisher] = None
         self._timer: Optional[Timer] = None
-
-        self.red_iter: Iterable[int] = None
-        self.green_iter: Iterable[int] = None
-        self.blue_iter: Iterable[int] = None
 
         super().__init__(node_name, **kwargs)
         
@@ -39,26 +31,16 @@ class LedsDemoLifecycle(Node):
         if self._pub is None or not self._pub.is_activated:
             pass
         else:
-            for key, msg in enumerate(self.led_msg.array):
-                if msg.b > 0: self.led_msg.array[key].b = msg.b * 0.80
-            
-            self.led_msg.array[next(self.red_iter)]   = ColorRGBA(r = 1.0, g = 0.0, b = 0.0, a = 1.0)
-            self.led_msg.array[next(self.green_iter)] = ColorRGBA(r = 0.0, g = 1.0, b = 0.0, a = 1.0)
-            self.led_msg.array[next(self.blue_iter)]  = ColorRGBA(r = 0.0, g = 0.0, b = 1.0, a = 1.0)
-            
-            self._pub.publish(self.led_msg)        
+            led = ColorRGBA(
+                    r = random.randint(0, 100)/100, 
+                    g = random.randint(0, 100)/100, 
+                    b = random.randint(0, 100)/100, a = 1.0)
+ 
+            self._pub.publish(led)        
 
 
     def on_configure(self, state: State) -> TransitionCallbackReturn:
-
-
-        self._pub = self.create_lifecycle_publisher(ColorRGBAArray, '/backlight/array', 10)
-
-        leds = list(range(24))
-        self.red_iter = cycle(leds[2:] + leds[:2]) # +2 led cycle
-        self.green_iter = cycle(leds[1:] + leds[:1]) # +1 led cycle
-        self.blue_iter = cycle(leds)
-
+        self._pub = self.create_lifecycle_publisher(ColorRGBA, '/backlight/all', 10)
         self.get_logger().info('on_configure() is called.')
 
         return TransitionCallbackReturn.SUCCESS
@@ -72,8 +54,8 @@ class LedsDemoLifecycle(Node):
         self.destroy_timer(self._timer)
 
         # clear all leds
-        self.led_msg = ColorRGBAArray()
-        self._pub.publish(self.led_msg)    
+        led_msg = ColorRGBA()
+        self._pub.publish(led_msg)    
 
         self.get_logger().info('on_deactivate() is called.')
         return super().on_deactivate(state)

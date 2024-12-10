@@ -9,7 +9,7 @@ from pathlib import Path
 
 logging.basicConfig(level=logging.INFO, 
                         filename="/home/pi/.ros/log/microros_heartbeat.log", 
-                        filemode="a",
+                        filemode="w",
                         format="%(asctime)s %(levelname)s %(message)s")
 
 logging.info("Start microros service monitor")
@@ -32,3 +32,5 @@ def timer_callback():
     threading.Timer(5.0, timer_callback).start()
 
 timer_callback()
+
+
