@@ -31,11 +31,11 @@ class LedsDemoLifecycle(Node):
         if self._pub is None or not self._pub.is_activated:
             pass
         else:
-            led = ColorRGBA(
-                    r = random.randint(0, 100)/100, 
-                    g = random.randint(0, 100)/100, 
-                    b = random.randint(0, 100)/100, a = 1.0)
- 
+            rand = random.randint(0, 100)/100
+            g = 1.0 - rand
+            b = 0.0
+
+            led = ColorRGBA(r = rand, g = g, b = b, a = 1.0)
             self._pub.publish(led)        
 
 

@@ -17,10 +17,14 @@ class LedSimpleDemoPublisher(Node):
 
     def timer_callback(self):
 
-        led = ColorRGBA(
-                r = random.randint(0, 100)/100, 
-                g = random.randint(0, 100)/100, 
-                b = random.randint(0, 100)/100, a = 1.0)
+        rand = random.randint(0, 100)/100
+        g = 1.0 - rand
+        b = 0.0
+
+        led = ColorRGBA(r = rand, g = g, b = b, a = 1.0)
+               # r = random.randint(0, 100)/100, 
+               # g = random.randint(0, 100)/100, 
+               # b = random.randint(0, 100)/100, a = 1.0)
 
         self.publisher_.publish(led)
 
