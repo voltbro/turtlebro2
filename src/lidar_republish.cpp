@@ -26,11 +26,15 @@ public:
                                     .set__from_value(0)
                                     .set__to_value(360)
                                     .set__step(1)};
+                                    
 
     this->declare_parameter("strip_angle_start", 0, param_desc);
 
     param_desc.description = "Strip lidar data stop angle in DEG";
     this->declare_parameter("strip_angle_stop", 0, param_desc);
+
+    this->declare_parameter("input_scan", "scan_s1");
+    this->declare_parameter("output_scan", "scan");    
 
     RCLCPP_INFO(this->get_logger(), "Init parameters: strip_angle_start: '%li', strip_angle_stop: '%li'",
                 this->get_parameter("strip_angle_start").as_int(), this->get_parameter("strip_angle_stop").as_int());
@@ -39,10 +43,10 @@ public:
     strip_angle_stop_rad = DEG2RAD(this->get_parameter("strip_angle_stop").as_int());
 
     lidar_subscription_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
-        "scan_s1", rclcpp::SensorDataQoS(),
+        this->get_parameter("input_scan").as_string(), rclcpp::SensorDataQoS(),
         std::bind(&LidarRepublisher::lidar_callback, this, _1));
 
-    lidar_publisher_ = this->create_publisher<sensor_msgs::msg::LaserScan>("/scan", 10);
+    lidar_publisher_ = this->create_publisher<sensor_msgs::msg::LaserScan>(this->get_parameter("output_scan").as_string(), 10);
 
     param_subscriber_ = std::make_shared<rclcpp::ParameterEventHandler>(this);
 
