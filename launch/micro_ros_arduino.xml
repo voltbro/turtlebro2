@@ -1,0 +1,18 @@
+<launch>
+
+   <!-- on board cp chip CP2102N or CP2102 -->
+   <arg name="cp_name" default="$(env CP_NAME CP2102N)"/>
+   
+   <group if="$(eval '\'$(var cp_name)\' == \'CP2102N\'')">
+      <node pkg="micro_ros_agent" exec="micro_ros_agent" 
+            args="serial --dev /dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_0010-if00-port0 -b 115200" 
+            name="microros_stm_serial_node"/>
+   </group>
+
+   <group if="$(eval '\'$(var cp_name)\' == \'CP2102\'')">
+      <node pkg="micro_ros_agent" exec="micro_ros_agent" 
+            args="serial --dev /dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0010-if00-port0 -b 115200" 
+            name="microros_stm_serial_node"/>
+   </group>
+   
+</launch>

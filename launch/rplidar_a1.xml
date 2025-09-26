@@ -1,8 +1,18 @@
 <launch>
+
+   <!-- on board cp chip CP2102N or CP2102 -->
+   <arg name="cp_name" default="$(env CP_NAME CP2102N)"/>   
    <!-- scan_modes is Standard Express Boost Sensitivity Stability -->
    <arg name="scan_mode" default="Boost"/>
+
+   <arg name="serial_port" default="/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_0011-if00-port0" 
+    if="$(eval '\'$(var cp_name)\' == \'CP2102N\'')"/>
+
+   <arg name="serial_port" default="/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0011-if00-port0" 
+    if="$(eval '\'$(var cp_name)\' == \'CP2102\'')"/>   
+
    <node pkg="rplidar_ros" exec="rplidar_composition" name="rplidar_composition">
-      <param name="serial_port"         value="/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0011-if00-port0"/>
+      <param name="serial_port"         value="$(var serial_port)"/>
       <param name="serial_baudrate"     value="115200"/><!--A1/A2 -->
       <param name="frame_id"            value="base_laser"/>
       <param name="inverted"            value="False"/>
