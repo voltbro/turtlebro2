@@ -5,7 +5,8 @@ export ROBOT_MODEL=turtlebro2
 export ROBOT_WHEEL_PARAM=12280
 export FASTRTPS_DEFAULT_PROFILES_FILE=/home/pi/.ros/fastdds_supeclient.xml
 
-
+# for "blue" board set 5
+# for "gold" board last number. 2.7 -> 7
 export BOARD_VERSION=7
 
 if [ $BOARD_VERSION -le 6 ]
