@@ -30,6 +30,12 @@ find_package(rclpy REQUIRED)
 add_executable(odom_node src/odom_node.cpp)
 ament_target_dependencies(odom_node rclcpp std_msgs tf2 tf2_ros geometry_msgs nav_msgs sensor_msgs)
 
+add_executable(odom_node_noimu src/odom_node_noimu.cpp)
+ament_target_dependencies(odom_node_noimu rclcpp std_msgs tf2 tf2_ros geometry_msgs nav_msgs sensor_msgs)
+
+add_executable(pose_2d src/pose_2d.cpp)
+ament_target_dependencies(pose_2d rclcpp std_msgs tf2 tf2_ros geometry_msgs nav_msgs sensor_msgs)
+
 
 add_executable(lidar_republish src/lidar_republish.cpp)
 ament_target_dependencies(lidar_republish
@@ -77,7 +83,7 @@ install(PROGRAMS
 )
 
 install(TARGETS
-  odom_node lidar_republish
+  odom_node odom_node_noimu pose_2d lidar_republish
   DESTINATION lib/${PROJECT_NAME})
   
 
