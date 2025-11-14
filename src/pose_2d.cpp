@@ -5,99 +5,80 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/pose2_d.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "nav_msgs/msg/odometry.hpp"
-#include "sensor_msgs/msg/imu.hpp"
-#include "tf2_ros/transform_broadcaster.h"
 
 using std::placeholders::_1;
 using namespace std::chrono_literals;
 
-class OdometryPublisher : public rclcpp::Node
+class Pose2DPublisher : public rclcpp::Node
 {
   public:
-    OdometryPublisher()
-    : Node("odometry_publisher")
+    Pose2DPublisher()
+    : Node("pose2d_publisher")
     {
-      RCLCPP_INFO(this->get_logger(), "Starting odometry_publisher CPP node");
-
-      tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+      RCLCPP_INFO(this->get_logger(), "Starting pose2d_publisher CPP node");
 
       auto qos = rclcpp::QoS(rclcpp::KeepLast(10));
       qos.reliability(rclcpp::ReliabilityPolicy::Reliable);
       qos.durability(rclcpp::DurabilityPolicy::Volatile);
 
-      pose_subscription_ = this->create_subscription<geometry_msgs::msg::Pose>(
-          "/pose", qos, 
-          std::bind(&OdometryPublisher::pose_callback, this, _1));
+      initialize_pose_subscription();
 
-      imu_subscription_ = this->create_subscription<sensor_msgs::msg::Imu>(
-          "/imu", qos, 
-          std::bind(&OdometryPublisher::imu_callback, this, _1));
-
-      odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", qos);
       pose2d_publisher_ = this->create_publisher<geometry_msgs::msg::Pose2D>("/pose2d", qos);
             
       timer_ = this->create_wall_timer(
-        250ms, std::bind(&OdometryPublisher::publish_pose2d_callback, this));
+        250ms, std::bind(&Pose2DPublisher::publish_pose2d_callback, this));
+
+      // Инициализируем время последнего сообщения
+      last_message_time_ = this->get_clock()->now();
+
+      // Создаем таймер для проверки получения сообщений (проверяем каждые 100мс)
+      check_timer_ = this->create_wall_timer(
+          100ms, std::bind(&Pose2DPublisher::check_message_timeout, this));
 
     }
 
   private:
-    void pose_callback(const std::shared_ptr<geometry_msgs::msg::Pose> msg) 
+    void initialize_pose_subscription()
     {
-      RCLCPP_DEBUG(this->get_logger(), "I heard ODOM.x: '%f'", msg->position.x);
+      auto pose_qos = rclcpp::QoS(rclcpp::KeepLast(100));
+      pose_qos.reliability(rclcpp::ReliabilityPolicy::BestEffort); 
+      pose_qos.durability(rclcpp::DurabilityPolicy::Volatile);
+      pose_qos.deadline(rclcpp::Duration(0, 0));  // Без ограничения по времени           
 
-      pose_msg = msg;
-      rclcpp::Time now = this->get_clock()->now();
+      pose_subscription_ = this->create_subscription<geometry_msgs::msg::Pose>(
+          "/pose", pose_qos, 
+          std::bind(&Pose2DPublisher::pose_callback, this, _1));
 
-      nav_msgs::msg::Odometry odom;
-      odom.header.stamp = now;
-      odom.header.frame_id = "odom";
-      odom.child_frame_id  = "base_footprint";
-
-      odom.pose.pose.position = msg->position;
-      odom.pose.pose.orientation = msg->orientation;
-
-      if (imu_msg != nullptr){
-        odom.twist.twist.angular = imu_msg->angular_velocity;
-        RCLCPP_DEBUG(
-          this->get_logger(),
-          "Publishing odom with angular velocity (x: %.4f, y: %.4f, z: %.4f)",
-          imu_msg->angular_velocity.x,
-          imu_msg->angular_velocity.y,
-          imu_msg->angular_velocity.z);
-      } else {
-        RCLCPP_DEBUG(
-          this->get_logger(),
-          "Publishing odom without IMU twist (imu_msg not received yet)");
-      }
-
-      RCLCPP_DEBUG(
-        this->get_logger(),
-        "Publishing odom pose (x: %.4f, y: %.4f, z: %.4f)",
-        msg->position.x,
-        msg->position.y,
-        msg->position.z);
-
-      odom_publisher_->publish(odom);
-
-      geometry_msgs::msg::TransformStamped t;
-      t.header.stamp = now;
-      t.header.frame_id = "odom";
-      t.child_frame_id  = "base_footprint";     
-      t.transform.translation.x = msg->position.x;
-      t.transform.translation.y = msg->position.y;
-      t.transform.translation.z = 0.0;
-      t.transform.rotation = msg->orientation;  
-      tf_broadcaster_->sendTransform(t);
-
+      RCLCPP_INFO(this->get_logger(), "Pose subscription initialized");
     }
 
-    void imu_callback(const std::shared_ptr<sensor_msgs::msg::Imu> msg) 
+    void check_message_timeout()
     {
-      RCLCPP_DEBUG(this->get_logger(), "I heard  IMU.x: '%f'", msg->angular_velocity.x);
-      imu_msg = msg;
+      rclcpp::Time now = this->get_clock()->now();
+      auto time_since_last_message = now - last_message_time_;
+      
+      if (time_since_last_message.seconds() > 1.0)
+      {
+        RCLCPP_WARN(this->get_logger(), 
+                   "No messages received for %.2f seconds. Reinitializing pose subscription...", 
+                   time_since_last_message.seconds());
+        
+        // Переинициализируем подписчика
+        pose_subscription_.reset();
+        initialize_pose_subscription();
+        
+        // Обновляем время последнего сообщения после переинициализации
+        last_message_time_ = now;
+      }
+    }
+
+    void pose_callback(const std::shared_ptr<geometry_msgs::msg::Pose> msg) 
+    {
+      // Обновляем время последнего полученного сообщения
+      last_message_time_ = this->get_clock()->now();
+
+      RCLCPP_DEBUG(this->get_logger(), "I heard pose.x: '%f'", msg->position.x);
+      pose_msg = msg;
     }
 
     void publish_pose2d_callback()
@@ -174,22 +155,22 @@ class OdometryPublisher : public rclcpp::Node
     rclcpp::TimerBase::SharedPtr timer_;
     
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr pose_subscription_;
-    rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_subscription_;
 
-    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
     rclcpp::Publisher<geometry_msgs::msg::Pose2D>::SharedPtr pose2d_publisher_;
 
-    std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-    std::shared_ptr<sensor_msgs::msg::Imu> imu_msg; 
     std::shared_ptr<geometry_msgs::msg::Pose> pose_msg;
     float last_valid_yaw_ {0.0f};
+
+    rclcpp::TimerBase::SharedPtr check_timer_;
+    rclcpp::Time last_message_time_;
 
 };
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<OdometryPublisher>());
+  rclcpp::spin(std::make_shared<Pose2DPublisher>());
   rclcpp::shutdown();
   return 0;
 }
+

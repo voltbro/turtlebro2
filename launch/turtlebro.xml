@@ -6,10 +6,10 @@
 
   <include file="$(find-pkg-share turtlebro_web)/launch/web_server.xml"/>
 
-  <include file="$(find-pkg-share turtlebro)/launch/leds_lifecycle.launch.py"/>
-  
-  <node pkg="turtlebro" exec="odom_node" name="odom_publisher" respawn="true" respawn_delay="10"/>
-  
+  <!-- <include file="$(find-pkg-share turtlebro)/launch/leds_lifecycle.launch.py"/> -->
 
+
+  <node pkg="turtlebro" exec="odom_node_noimu" name="odom_noimu_publisher" respawn="true" respawn_delay="10"/>
+  <node pkg="turtlebro" exec="pose_2d" name="pose_2d_publisher" respawn="true" respawn_delay="10"/>
 
 </launch>
