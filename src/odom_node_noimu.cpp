@@ -25,17 +25,60 @@ class OdometryPublisher : public rclcpp::Node
       qos.reliability(rclcpp::ReliabilityPolicy::Reliable);
       qos.durability(rclcpp::DurabilityPolicy::Volatile);
 
-      pose_subscription_ = this->create_subscription<geometry_msgs::msg::Pose>(
-          "/pose", qos, 
-          std::bind(&OdometryPublisher::pose_callback, this, _1));
+      initialize_pose_subscription();
 
       odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", qos);
+
+      // Инициализируем время последнего сообщения
+      last_message_time_ = this->get_clock()->now();
+
+      // Создаем таймер для проверки получения сообщений (проверяем каждые 100мс)
+      check_timer_ = this->create_wall_timer(
+          100ms, std::bind(&OdometryPublisher::check_message_timeout, this));
 
     }
 
   private:
+    void initialize_pose_subscription()
+    {
+      auto pose_qos = rclcpp::QoS(rclcpp::KeepLast(100));
+      pose_qos.reliability(rclcpp::ReliabilityPolicy::BestEffort); // subscriber allow use BestEffort on Reliable publisher 
+      // pose_qos.reliability(rclcpp::ReliabilityPolicy::Reliable); 
+      pose_qos.durability(rclcpp::DurabilityPolicy::Volatile);
+      pose_qos.deadline(rclcpp::Duration(0, 0));  // Без ограничения по времени      
+
+      pose_subscription_ = this->create_subscription<geometry_msgs::msg::Pose>(
+          "/pose", pose_qos, 
+          std::bind(&OdometryPublisher::pose_callback, this, _1));
+
+      RCLCPP_INFO(this->get_logger(), "Pose subscription initialized");
+    }
+
+    void check_message_timeout()
+    {
+      rclcpp::Time now = this->get_clock()->now();
+      auto time_since_last_message = now - last_message_time_;
+      
+      if (time_since_last_message.seconds() > 1.0)
+      {
+        RCLCPP_WARN(this->get_logger(), 
+                   "No messages received for %.2f seconds. Reinitializing pose subscription...", 
+                   time_since_last_message.seconds());
+        
+        // Переинициализируем подписчика
+        pose_subscription_.reset();
+        initialize_pose_subscription();
+        
+        // Обновляем время последнего сообщения после переинициализации
+        last_message_time_ = now;
+      }
+    }
+
     void pose_callback(const std::shared_ptr<geometry_msgs::msg::Pose> msg) 
     {
+      // Обновляем время последнего полученного сообщения
+      last_message_time_ = this->get_clock()->now();
+
       RCLCPP_DEBUG(this->get_logger(), "I heard ODOM.x: '%f'", msg->position.x);
 
       rclcpp::Time now = this->get_clock()->now();
@@ -75,6 +118,9 @@ class OdometryPublisher : public rclcpp::Node
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_publisher_;
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+
+    rclcpp::TimerBase::SharedPtr check_timer_;
+    rclcpp::Time last_message_time_;
 
 };
 

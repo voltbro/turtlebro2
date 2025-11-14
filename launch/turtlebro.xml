@@ -6,7 +6,7 @@
 
   <include file="$(find-pkg-share turtlebro_web)/launch/web_server.xml"/>
 
-  <include file="$(find-pkg-share turtlebro)/launch/leds_lifecycle.launch.py"/>
+  <!-- <include file="$(find-pkg-share turtlebro)/launch/leds_lifecycle.launch.py"/> -->
 
 
   <node pkg="turtlebro" exec="odom_node_noimu" name="odom_noimu_publisher" respawn="true" respawn_delay="10"/>
