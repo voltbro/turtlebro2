@@ -57,7 +57,7 @@ class OdometryPublisher : public rclcpp::Node
       
       // Создаем таймер для проверки получения сообщений (проверяем каждые 100мс)
       check_timer_ = this->create_wall_timer(
-          100ms, std::bind(&OdometryPublisher::check_message_timeout, this));
+          200ms, std::bind(&OdometryPublisher::check_message_timeout, this));
 
     }
 
@@ -68,7 +68,7 @@ class OdometryPublisher : public rclcpp::Node
       rclcpp::Time now = this->get_clock()->now();
       auto time_since_last_message = now - last_message_time_;
       
-      if (time_since_last_message.seconds() > 2.0)
+      if (time_since_last_message.seconds() > 1.0)
       {
         RCLCPP_WARN(this->get_logger(), 
                    "No messages received for %.2f seconds. Restarting node for full reinitialization...", 
@@ -268,7 +268,7 @@ int main(int argc, char * argv[])
       rclcpp::shutdown();
       
       // Небольшая задержка перед перезапуском
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(1000ms);
       
       // Продолжаем цикл для перезапуска
       continue;
