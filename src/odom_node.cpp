@@ -1,6 +1,8 @@
 #include <memory>
 #include <cmath>
 #include <chrono>
+#include <atomic>
+#include <thread>
 
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/pose.hpp"
@@ -13,6 +15,9 @@
 using std::placeholders::_1;
 using namespace std::chrono_literals;
 
+// Глобальный флаг для завершения ноды
+std::atomic<bool> should_restart{false};
+
 class OdometryPublisher : public rclcpp::Node
 {
   public:
@@ -23,29 +28,63 @@ class OdometryPublisher : public rclcpp::Node
 
       tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
-      auto qos = rclcpp::QoS(rclcpp::KeepLast(10));
-      qos.reliability(rclcpp::ReliabilityPolicy::Reliable);
-      qos.durability(rclcpp::DurabilityPolicy::Volatile);
+      auto sub_qos = rclcpp::QoS(rclcpp::KeepLast(100));
+      sub_qos.reliability(rclcpp::ReliabilityPolicy::BestEffort); // subscriber allow use BestEffort on Reliable publisher 
+      // sub_qos.reliability(rclcpp::ReliabilityPolicy::Reliable); 
+      sub_qos.durability(rclcpp::DurabilityPolicy::Volatile);
+      sub_qos.deadline(rclcpp::Duration(0, 0));  // Без ограничения по времени          
+
+      auto piu_qos = rclcpp::QoS(rclcpp::KeepLast(10));
+      piu_qos.reliability(rclcpp::ReliabilityPolicy::Reliable);
+      piu_qos.durability(rclcpp::DurabilityPolicy::Volatile);
 
       pose_subscription_ = this->create_subscription<geometry_msgs::msg::Pose>(
-          "/pose", qos, 
+          "/pose", sub_qos, 
           std::bind(&OdometryPublisher::pose_callback, this, _1));
 
       imu_subscription_ = this->create_subscription<sensor_msgs::msg::Imu>(
-          "/imu", qos, 
+          "/imu", sub_qos, 
           std::bind(&OdometryPublisher::imu_callback, this, _1));
 
-      odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", qos);
-      pose2d_publisher_ = this->create_publisher<geometry_msgs::msg::Pose2D>("/pose2d", qos);
+      odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", piu_qos);
+      pose2d_publisher_ = this->create_publisher<geometry_msgs::msg::Pose2D>("/pose2d", piu_qos);
+      
+      // Инициализируем время последнего сообщения
+      last_message_time_ = this->get_clock()->now();
             
       timer_ = this->create_wall_timer(
         250ms, std::bind(&OdometryPublisher::publish_pose2d_callback, this));
+      
+      // Создаем таймер для проверки получения сообщений (проверяем каждые 100мс)
+      check_timer_ = this->create_wall_timer(
+          100ms, std::bind(&OdometryPublisher::check_message_timeout, this));
 
     }
 
   private:
+
+    void check_message_timeout()
+    {
+      rclcpp::Time now = this->get_clock()->now();
+      auto time_since_last_message = now - last_message_time_;
+      
+      if (time_since_last_message.seconds() > 2.0)
+      {
+        RCLCPP_WARN(this->get_logger(), 
+                   "No messages received for %.2f seconds. Restarting node for full reinitialization...", 
+                   time_since_last_message.seconds());
+        
+        // Устанавливаем флаг для перезапуска ноды
+        // Основной цикл проверит этот флаг и завершит ноду
+        should_restart = true;
+      }
+    }
+
     void pose_callback(const std::shared_ptr<geometry_msgs::msg::Pose> msg) 
     {
+      // Обновляем время последнего полученного сообщения
+      last_message_time_ = this->get_clock()->now();
+      
       RCLCPP_DEBUG(this->get_logger(), "I heard ODOM.x: '%f'", msg->position.x);
 
       pose_msg = msg;
@@ -172,6 +211,7 @@ class OdometryPublisher : public rclcpp::Node
 
   
     rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr check_timer_;
     
     rclcpp::Subscription<geometry_msgs::msg::Pose>::SharedPtr pose_subscription_;
     rclcpp::Subscription<sensor_msgs::msg::Imu>::SharedPtr imu_subscription_;
@@ -182,14 +222,62 @@ class OdometryPublisher : public rclcpp::Node
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
     std::shared_ptr<sensor_msgs::msg::Imu> imu_msg; 
     std::shared_ptr<geometry_msgs::msg::Pose> pose_msg;
+
     float last_valid_yaw_ {0.0f};
+    rclcpp::Time last_message_time_;
 
 };
 
 int main(int argc, char * argv[])
 {
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<OdometryPublisher>());
-  rclcpp::shutdown();
+  // Цикл для самоперезапуска ноды через rclcpp::init/shutdown
+  while (true)
+  {
+    // Инициализируем ROS 2
+    rclcpp::init(argc, argv);
+    
+    // Сбрасываем флаг перезапуска перед созданием новой ноды
+    should_restart = false;
+    
+    // Создаем ноду
+    auto node = std::make_shared<OdometryPublisher>();
+    rclcpp::executors::SingleThreadedExecutor executor;
+    executor.add_node(node);
+    
+    RCLCPP_INFO(node->get_logger(), "Node started, waiting for messages...");
+    
+    // Запускаем executor с проверкой флага перезапуска
+    while (rclcpp::ok() && !should_restart)
+    {
+      // Обрабатываем события
+      executor.spin_once(std::chrono::milliseconds(100));
+    }
+    
+    // Если запрошен перезапуск
+    if (should_restart)
+    {
+      RCLCPP_WARN(node->get_logger(), "Node restart requested, shutting down and reinitializing...");
+      
+      // Удаляем ноду из executor перед уничтожением
+      executor.remove_node(node);
+      
+      // Уничтожаем ноду
+      node.reset();
+      
+      // Завершаем ROS 2
+      rclcpp::shutdown();
+      
+      // Небольшая задержка перед перезапуском
+      std::this_thread::sleep_for(100ms);
+      
+      // Продолжаем цикл для перезапуска
+      continue;
+    }
+    
+    // Нормальное завершение (если rclcpp::ok() стал false)
+    rclcpp::shutdown();
+    break;
+  }
+  
   return 0;
 }
