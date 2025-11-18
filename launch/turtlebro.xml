@@ -7,8 +7,4 @@
 
   <!-- <include file="$(find-pkg-share turtlebro)/launch/leds_lifecycle.launch.py"/> -->
 
-  <node pkg="turtlebro" exec="odom_node" name="odom_node_publisher" respawn="true" respawn_delay="3"/>
-
-  <include file="$(find-pkg-share turtlebro)/launch/micro_ros_stm.xml"/>
-
 </launch>
