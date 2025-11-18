@@ -90,15 +90,56 @@ class OdometryPublisher : public rclcpp::Node
         pose.theta = this->quaternion_to_theta(pose_msg->orientation);
 
         pose2d_publisher_->publish(pose);
+      } else {
+        RCLCPP_DEBUG(
+          this->get_logger(),
+          "Skipping pose2d publish: pose_msg not received yet");
       }
     }     
 
-    float quaternion_to_theta(const geometry_msgs::msg::Quaternion& orientation){
+float quaternion_to_theta(const geometry_msgs::msg::Quaternion& orientation){
 
-      auto t1 = +2.0 * (orientation.w * orientation.z + orientation.x * orientation.y);
-      auto t2 = +1.0 - 2.0 * (pow(orientation.y,2) + pow(orientation.z,2));
+      const bool finite =
+        std::isfinite(orientation.w) &&
+        std::isfinite(orientation.x) &&
+        std::isfinite(orientation.y) &&
+        std::isfinite(orientation.z);
 
-      return atan2(t1, t2);   
+      if (!finite){
+        RCLCPP_WARN_THROTTLE(
+          this->get_logger(), *this->get_clock(), 5000,
+          "Received non-finite quaternion, reusing last valid yaw");
+        return last_valid_yaw_;
+      }
+
+      const double norm_sq =
+        orientation.w * orientation.w +
+        orientation.x * orientation.x +
+        orientation.y * orientation.y +
+        orientation.z * orientation.z;
+
+      if (norm_sq < 1e-9){
+        RCLCPP_WARN_THROTTLE(
+          this->get_logger(), *this->get_clock(), 5000,
+          "Received near-zero quaternion, reusing last valid yaw");
+        return last_valid_yaw_;
+      }
+
+      const double inv_norm = 1.0 / std::sqrt(norm_sq);
+      const double qw = orientation.w * inv_norm;
+      const double qx = orientation.x * inv_norm;
+      const double qy = orientation.y * inv_norm;
+      const double qz = orientation.z * inv_norm;
+
+      const double t1 = 2.0 * (qw * qz + qx * qy);
+      const double t2 = 1.0 - 2.0 * (qy * qy + qz * qz);
+
+      last_valid_yaw_ = static_cast<float>(std::atan2(t1, t2));
+      RCLCPP_DEBUG(
+        this->get_logger(),
+        "Computed yaw from quaternion (w: %.4f, x: %.4f, y: %.4f, z: %.4f) -> theta: %.4f",
+        qw, qx, qy, qz, last_valid_yaw_);
+      return last_valid_yaw_;
     }
 
   
@@ -113,6 +154,8 @@ class OdometryPublisher : public rclcpp::Node
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
     std::shared_ptr<sensor_msgs::msg::Imu> imu_msg; 
     std::shared_ptr<geometry_msgs::msg::Pose> pose_msg;
+
+    float last_valid_yaw_ {0.0f};
 
 };
 
