@@ -6,6 +6,14 @@
                 <builtin>
                     <discovery_config>
                         <discoveryProtocol>SUPER_CLIENT</discoveryProtocol>
+                        <leaseDuration>
+                            <sec>60</sec>
+                            <nanosec>0</nanosec>
+                        </leaseDuration>
+                        <leaseAnnouncement>
+                            <sec>10</sec>
+                            <nanosec>0</nanosec>
+                        </leaseAnnouncement>                        
                         <discoveryServersList>
                             <RemoteServer prefix="44.53.00.5f.45.50.52.4f.53.49.4d.41">
                                 <metatrafficUnicastLocatorList>
