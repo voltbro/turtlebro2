@@ -226,7 +226,6 @@ class OdometryPublisher : public rclcpp::Node
     std::shared_ptr<geometry_msgs::msg::Pose> pose_msg;
     float last_valid_yaw_ {0.0f};
 
-    float last_valid_yaw_ {0.0f};
     rclcpp::Time last_message_time_;
 
 };
