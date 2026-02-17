@@ -28,6 +28,7 @@ class OdometryPublisher : public rclcpp::Node
 
       tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
+
       auto sub_qos = rclcpp::QoS(rclcpp::KeepLast(100));
       sub_qos.reliability(rclcpp::ReliabilityPolicy::BestEffort); // subscriber allow use BestEffort on Reliable publisher 
       // sub_qos.reliability(rclcpp::ReliabilityPolicy::Reliable); 
@@ -51,7 +52,8 @@ class OdometryPublisher : public rclcpp::Node
       
       // Инициализируем время последнего сообщения
       last_message_time_ = this->get_clock()->now();
-            
+
+          
       timer_ = this->create_wall_timer(
         250ms, std::bind(&OdometryPublisher::publish_pose2d_callback, this));
       
@@ -222,6 +224,7 @@ class OdometryPublisher : public rclcpp::Node
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
     std::shared_ptr<sensor_msgs::msg::Imu> imu_msg; 
     std::shared_ptr<geometry_msgs::msg::Pose> pose_msg;
+    float last_valid_yaw_ {0.0f};
 
     float last_valid_yaw_ {0.0f};
     rclcpp::Time last_message_time_;

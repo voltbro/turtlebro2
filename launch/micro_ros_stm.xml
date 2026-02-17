@@ -16,6 +16,9 @@
    </group>
 
   <node pkg="turtlebro" exec="odom_node" name="odom_publisher" respawn="true" respawn_delay="10"/>
+  
+  <!-- <node pkg="turtlebro" exec="odom_node_noimu" name="odom_noimu_publisher" respawn="true" respawn_delay="10"/>
+  <node pkg="turtlebro" exec="pose_2d" name="pose_2d_publisher" respawn="true" respawn_delay="10"/> -->  
 
    <!-- micros params init at stm23 on boot, we need reinit same params after os load -->
    <node pkg="turtlebro" exec="param_setter.py" name="stm_param_setter">
