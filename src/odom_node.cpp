@@ -34,9 +34,9 @@ class OdometryPublisher : public rclcpp::Node
       sub_qos.durability(rclcpp::DurabilityPolicy::Volatile);
       sub_qos.deadline(rclcpp::Duration(0, 0));  // Без ограничения по времени          
 
-      auto piu_qos = rclcpp::QoS(rclcpp::KeepLast(10));
-      piu_qos.reliability(rclcpp::ReliabilityPolicy::Reliable);
-      piu_qos.durability(rclcpp::DurabilityPolicy::Volatile);
+      auto pub_qos = rclcpp::QoS(rclcpp::KeepLast(10));
+      pub_qos.reliability(rclcpp::ReliabilityPolicy::Reliable);
+      pub_qos.durability(rclcpp::DurabilityPolicy::Volatile);
 
       pose_subscription_ = this->create_subscription<geometry_msgs::msg::Pose>(
           "/pose", sub_qos, 
@@ -46,8 +46,8 @@ class OdometryPublisher : public rclcpp::Node
           "/imu", sub_qos, 
           std::bind(&OdometryPublisher::imu_callback, this, _1));
 
-      odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", piu_qos);
-      pose2d_publisher_ = this->create_publisher<geometry_msgs::msg::Pose2D>("/pose2d", piu_qos);
+      odom_publisher_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", pub_qos);
+      pose2d_publisher_ = this->create_publisher<geometry_msgs::msg::Pose2D>("/pose2d", pub_qos);
       
       // Инициализируем время последнего сообщения
       last_message_time_ = this->get_clock()->now();
@@ -268,7 +268,7 @@ int main(int argc, char * argv[])
       rclcpp::shutdown();
       
       // Небольшая задержка перед перезапуском
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(300ms);
       
       // Продолжаем цикл для перезапуска
       continue;
