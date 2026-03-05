@@ -1,10 +1,10 @@
 #!/bin/bash
 
+source /home/pi/.ros_params
 source /opt/ros/jazzy/setup.bash
 source /home/pi/microros_ws/install/local_setup.bash
 source /home/pi/ros_extra_ws/install/local_setup.bash
 source /home/pi/turtlebro_ws/install/local_setup.bash
-source /home/pi/.ros_params
 
 ros2 service call /stop_motor std_srvs/srv/Empty
 
