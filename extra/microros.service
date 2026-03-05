@@ -2,6 +2,7 @@
 Description="MicroROS Agent"
 After=getty.target
 After=fastdds.service
+Wants=fastdds.service
 Wants=network-online.target
 
 [Service]

@@ -11,6 +11,8 @@ After=sound.target
 
 Wants=sound.target
 Wants=network-online.target
+Wants=fastdds.service
+Wants=microros.service
 
 [Service]
 #Environment="HOME=pi"
